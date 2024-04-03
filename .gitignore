@@ -1,0 +1,6 @@
+.idea/
+.vscode/
+
+.composer/
+vendor/
+.bash_history

@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: php_app
+    build:
+      context: ./docker/php
+    expose:
+      - "9000"
+    volumes:
+      - .:/var/www
+    restart: unless-stopped
+    networks:
+      - appnet
+
+  nginx:
+    container_name: nginx
+    image: nginx:stable-alpine3.17
+    ports:
+      - "44480:80"
+      - "44443:443"
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/templates:/etc/nginx/templates
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
