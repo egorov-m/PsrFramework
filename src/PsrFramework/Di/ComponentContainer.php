@@ -2,52 +2,59 @@
 
 namespace Csu\PsrFramework\Di;
 
-use Csu\PsrFramework\Exception\LogicException;
-use Csu\PsrFramework\Exception\NotFoundException;
+use Csu\PsrFramework\Exception\ContainerException;
+use ReflectionClass;
+
 use Psr\Container\ContainerInterface;
+use ReflectionException;
+use ReflectionNamedType;
+use ReflectionParameter;
+use ReflectionUnionType;
+
 
 class ComponentContainer extends BaseComponent implements ContainerInterface
 {
-    private array $components = [];
+    private array $components;
     private array $config;
+
+    public function __construct(array $params)
+    {
+        parent::__construct($params);
+        $this -> config = $params;
+        $this -> components = [];
+    }
 
     public function init(): void {
 
     }
 
-    public function get(string $id) {
-        if (array_key_exists($id, $this -> components))
-        {
-            return $this -> components[$id];
-        }
-        if (!isset($this -> config[$id]))
-        {
-            throw new NotFoundException();
-        }
-        if (!isset($this -> config[$id]["class"]))
-        {
-            throw new LogicException();
-        }
-        $class = $this -> config[$id]["class"];
-        if (!class_exists($class))
-        {
-            throw ...;
-        }
-        $params = $this->config[$id];
-        unset($params["class"]);
-        $component = new $class($params);
-        $this -> components[$id] = $component;
-        return $component;
+    /**
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function get(string $id)
+    {
+        if ($this->has($id)) {
+            $entry = null;
+            if (isset($this->components[$id])) {
+                $entry = $this->components[$id];
+            } elseif (isset($this->config[$id])) {
+                $entry = $this->config[$id];
+            }
 
+            return $entry($this);
+        }
+
+        return $this->resolve($id);
     }
 
     public function has(string $id): bool
     {
-        if (array_key_exists($id, $this -> components))
+        if (array_key_exists($id, $this->components))
         {
             return true;
         }
-        if (array_key_exists($id, $this -> config))
+        if (array_key_exists($id, $this->config))
         {
             return true;
         }
@@ -55,10 +62,60 @@ class ComponentContainer extends BaseComponent implements ContainerInterface
         return false;
     }
 
-    public function __construct(array $params)
+    public function __set(string $id, callable $concrete)
     {
-        parent::__construct($params);
-        $this -> config = $params;
-        $this -> components = [];
+        $this->components[$id] = $concrete;
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function resolve(string $id)
+    {
+        $reflectionClass = new ReflectionClass($id);
+
+        if (! $reflectionClass->isInstantiable()) {
+            throw new ContainerException("Class \"" . $id . "\" is not instantiable.");
+        }
+
+        $constructor = $reflectionClass->getConstructor();
+
+        if (! $constructor) {
+            return new $id;
+        }
+
+        $parameters = $constructor->getParameters();
+
+        if (! $parameters) {
+            return new $id;
+        }
+
+        $dependencies = array_map(function (ReflectionParameter $param) use ($id) {
+            $name=$param->getName();
+            $type=$param->getType();
+
+            if (! $type) {
+                throw new ContainerException(
+                    "Failed to resolve class \"" . $id . "\" because param \"" . $name . "\" is missing a type."
+                );
+            }
+
+            if ($type instanceof ReflectionUnionType) {
+                throw new ContainerException(
+                    "Failed to resolve class \"" . $id . "\" because of union type for param \"" . $name . "\" is missing a type."
+                );
+            }
+
+            if ($type instanceof ReflectionNamedType && ! $type->isBuiltin()) {
+                return $this->get($type->getName());
+            }
+
+            throw new ContainerException(
+                "Failed to resolve class \"" . $id . "\" because invalid param \"" . $name . "\" is missing a type."
+            );
+        }, $parameters);
+
+        return $reflectionClass->newInstanceArgs($dependencies);
     }
 }
