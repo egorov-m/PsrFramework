@@ -2,7 +2,8 @@
     "name": "csu/psr-framework",
     "autoload": {
         "psr-4": {
-            "Csu\\PsrFramework\\": "src/PsrFramework/"
+            "Csu\\PsrFramework\\": "src/PsrFramework/",
+            "Csu\\PsrFramework\\Examples\\": "examples/"
         }
     },
     "require": {

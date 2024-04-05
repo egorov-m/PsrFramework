@@ -2,34 +2,31 @@
 
 namespace Csu\PsrFramework;
 
-use Csu\PsrFramework\Exception\ConfigException;
+use Csu\PsrFramework\Exception\RouteNotFoundException;
+use Csu\PsrFramework\Http\Server\Router;
+use Csu\PsrFramework\Http\Server\View;
 use Psr\Container\ContainerInterface;
-
-use Csu\PsrFramework\Di\ComponentContainer;
 
 class App
 {
-    public array $params;
-    public ContainerInterface $components;
-
-    /**
-     * @throws ConfigException
-     */
-    public function init()
+    public function __construct(
+        protected ContainerInterface $components,
+        protected Router $router,
+        protected array $request,
+        protected array $config
+    )
     {
-        if (! array_key_exists("components", $this->params)) {
-            throw new ConfigException(
-                "The config must contain the components."
-            );
-        }
 
-        $this->components=new ComponentContainer(
-            $this->params["components"]
-        );
     }
 
-    public function run(): string
+    public function run()
     {
-        return "Hello, World!";
+        try {
+            echo $this->router->resolve($this->request["uri"], strtolower($this->request["method"]));
+        } catch (RouteNotFoundException) {
+            http_response_code(404);
+
+            echo View::make("error/404");
+        }
     }
 }

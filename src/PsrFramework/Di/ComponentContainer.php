@@ -42,7 +42,11 @@ class ComponentContainer extends BaseComponent implements ContainerInterface
                 $entry = $this->config[$id];
             }
 
-            return $entry($this);
+            if (is_callable($entry)) {
+                return $entry($this);
+            }
+
+            $id = $entry;
         }
 
         return $this->resolve($id);
@@ -62,7 +66,7 @@ class ComponentContainer extends BaseComponent implements ContainerInterface
         return false;
     }
 
-    public function __set(string $id, callable $concrete)
+    public function __set(string $id, callable|string $concrete)
     {
         $this->components[$id] = $concrete;
     }
