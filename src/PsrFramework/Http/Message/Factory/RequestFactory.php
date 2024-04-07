@@ -2,13 +2,23 @@
 
 namespace Csu\PsrFramework\Http\Message\Factory;
 
+use Csu\PsrFramework\Http\Message\Request;
+use InvalidArgumentException;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
 
 class RequestFactory implements RequestFactoryInterface
 {
     public function createRequest(string $method, $uri): RequestInterface
     {
-        // TODO: Implement createRequest() method.
+        if (!$uri instanceof UriInterface) {
+            throw new InvalidArgumentException('Invalid URI provided');
+        }
+
+        $request = new Request($uri);
+        $request = $request->withMethod($method);
+
+        return $request;
     }
 }
