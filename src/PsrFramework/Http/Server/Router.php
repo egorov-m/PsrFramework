@@ -30,8 +30,7 @@ class Router implements RouteInterface
         private readonly ServerRequestFactoryInterface $serverRequestFactory,
         private readonly ResponseFactoryInterface $responseFactory,
         private readonly EmitterInterface $emitter = new Emitter()
-    )
-    {
+    ) {
         $this->middlewareDispatcher = new MiddlewareDispatcher($this, $this->container);
     }
 
@@ -84,7 +83,6 @@ class Router implements RouteInterface
         try {
             $response = $this->middlewareDispatcher->handle($request);
             $this->emitter->emit($response);
-
         } catch (RouteNotFoundException) {
             $response = $this->responseFactory->createResponse(HttpStatusCode::StatusNotFound->value);
             $body = $response->getBody();

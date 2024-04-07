@@ -5,7 +5,6 @@ namespace Csu\PsrFramework\Exceptions;
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
 
-class ConfigException extends Exception implements ContainerExceptionInterface
+class UnauthorizedException extends Exception implements ContainerExceptionInterface
 {
-
 }

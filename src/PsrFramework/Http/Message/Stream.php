@@ -19,7 +19,7 @@ class Stream implements StreamInterface
 
     public function __toString(): string
     {
-        if (!$this->isSeekable()){
+        if (!$this->isSeekable()) {
             return '';
         }
         $this -> rewind();
@@ -40,20 +40,20 @@ class Stream implements StreamInterface
 
     public function getSize(): ?int
     {
-        if(is_resource($this->stream)){
+        if (is_resource($this->stream)) {
             $stats = fstat($this->stream);
             return isset($stats['size']) ? $stats['size'] : null;
         }
-       return null;
+        return null;
     }
 
     public function tell(): int
     {
-        if (!is_resource($this->stream)){
+        if (!is_resource($this->stream)) {
             throw new RuntimeException("Stream is not a resource");
         }
         $result = ftell($this->stream);
-        if (!is_int($result)){
+        if (!is_int($result)) {
             throw new RuntimeException("Error occurred during tell operation");
         }
         return $result;
@@ -72,7 +72,7 @@ class Stream implements StreamInterface
 
     public function seek(int $offset, int $whence = SEEK_SET): void
     {
-        if(!$this->isSeekable()){
+        if (!$this->isSeekable()) {
             throw new RuntimeException("Stream is not seekable");
         }
         fseek($this->stream, $offset, $whence);
@@ -96,11 +96,11 @@ class Stream implements StreamInterface
 
     public function write(string $string): int
     {
-        if(!$this->isWritable()){
+        if (!$this->isWritable()) {
             throw new RuntimeException("Stream is not writable");
         }
         $result = fwrite($this->stream, $string);
-        if ($result===false){
+        if ($result === false) {
             throw new RuntimeException("Error writing to stream");
         }
         return $result;
@@ -116,7 +116,7 @@ class Stream implements StreamInterface
 
     public function read(int $length): string
     {
-        if(!$this->isReadable()){
+        if (!$this->isReadable()) {
             throw new RuntimeException("Stream is not readable");
         }
         $result = fread($this->stream);
@@ -125,7 +125,7 @@ class Stream implements StreamInterface
 
     public function getContents(): string
     {
-        if (!$this->isReadable()){
+        if (!$this->isReadable()) {
             throw new RuntimeException("Stream is not readable");
         }
         $contents = stream_get_contents($this->stream);
@@ -135,7 +135,7 @@ class Stream implements StreamInterface
     public function getMetadata(?string $key = null)
     {
         $meta = stream_get_meta_data($this->stream);
-        if ($key === null){
+        if ($key === null) {
             return $meta;
         }
         return isset($meta[$key]) ? $meta[$key] : null;

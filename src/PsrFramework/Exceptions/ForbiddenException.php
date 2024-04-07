@@ -5,6 +5,6 @@ namespace Csu\PsrFramework\Exceptions;
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
 
-class HeadersAlreadySentException extends Exception implements ContainerExceptionInterface
+class ForbiddenException extends Exception implements ContainerExceptionInterface
 {
 }

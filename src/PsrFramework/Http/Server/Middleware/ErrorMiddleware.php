@@ -2,8 +2,9 @@
 
 namespace Csu\PsrFramework\Http\Server\Middleware;
 
-use Csu\PsrFramework\Http\Message\Response;
-use HttpException;
+use Closure;
+use Csu\PsrFramework\Enums\HttpStatusCode;
+use Csu\PsrFramework\Http\Message\Factory\ResponseFactory;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -12,21 +13,19 @@ use Throwable;
 
 class ErrorMiddleware implements MiddlewareInterface
 {
-    protected bool $displayErrorDetails;
-    protected bool $logErrors;
-    protected bool $logErrorDetails;
-    protected array $handlers = [];
-    protected array $subClassHandlers = [];
-    protected $defaultErrorHandler;
+    protected Closure $defaultErrorHandler;
 
     public function __construct(
-        bool $displayErrorDetails,
-        bool $logErrors,
-        bool $logErrorDetails
+        protected array $handlers = [],
+        protected ResponseFactory $responseFactory = new ResponseFactory()
     ) {
-        $this->displayErrorDetails = $displayErrorDetails;
-        $this->logErrors = $logErrors;
-        $this->logErrorDetails = $logErrorDetails;
+        $this->defaultErrorHandler =
+            function (ServerRequestInterface $request, Throwable $exception) {
+                return $this->responseFactory->createResponse(
+                    HttpStatusCode::StatusInternalServerError->value,
+                    "Internal Server Error"
+                );
+            };
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -40,14 +39,10 @@ class ErrorMiddleware implements MiddlewareInterface
 
     public function handleException(ServerRequestInterface $request, Throwable $exception): ResponseInterface
     {
-        if ($exception instanceof HttpException) {
-            $request = $exception->getRequest();
-        }
-
         $exceptionType = get_class($exception);
         $handler = $this->getErrorHandler($exceptionType);
 
-        return $handler($request, $exception, $this->displayErrorDetails, $this->logErrors, $this->logErrorDetails);
+        return $handler($request, $exception);
     }
 
     public function getErrorHandler(string $type)
@@ -55,31 +50,26 @@ class ErrorMiddleware implements MiddlewareInterface
         return $this->handlers[$type] ?? $this->defaultErrorHandler;
     }
 
-    public function setErrorHandler($typeOrTypes, $handler, bool $handleSubclasses = false): self
+    public function setErrorHandler($typeOrTypes, $handler): self
     {
         $isTypeArray = is_array($typeOrTypes);
         $types = $isTypeArray ? $typeOrTypes : [$typeOrTypes];
 
         foreach ($types as $type) {
-            $this->addErrorHandler($type, $handler, $handleSubclasses);
+            $this->addErrorHandler($type, $handler);
         }
 
         return $this;
     }
 
-    private function addErrorHandler(string $type, $handler, bool $handleSubclasses): void
+    private function addErrorHandler(string $type, $handler): void
     {
-        if ($handleSubclasses) {
-            $this->subClassHandlers[$type] = $handler;
-        } else {
-            $this->handlers[$type] = $handler;
-        }
+        $this->handlers[$type] = $handler;
     }
 
-    public function setDefaultErrorHandler($handler): self
+    public function setDefaultErrorHandlers($handler): self
     {
         $this->defaultErrorHandler = $handler;
         return $this;
     }
-
 }

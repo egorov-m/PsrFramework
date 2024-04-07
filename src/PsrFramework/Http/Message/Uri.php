@@ -104,11 +104,13 @@ class Uri implements UriInterface
 
     public function withScheme(string $scheme): UriInterface
     {
-        if ($this->scheme === $scheme = strtr(
-            $scheme,
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            "abcdefghijklmnopqrstuvwxyz"
-            )) {
+        if (
+            $this->scheme === $scheme = strtr(
+                $scheme,
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "abcdefghijklmnopqrstuvwxyz"
+            )
+        ) {
             return $this;
         }
 
@@ -135,7 +137,7 @@ class Uri implements UriInterface
                 "/[" . self::CHAR_GEN_DELIMS . self::CHAR_SUB_DELIMS . "]++/",
                 [__CLASS__, "rawurlencodeMatchZero"],
                 $password
-                );
+            );
         }
 
         if ($this->userInfo === $info) {
@@ -151,11 +153,13 @@ class Uri implements UriInterface
     public function withHost(string $host): UriInterface
     {
 
-        if ($this->host === $host = strtr(
-            $host,
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            "abcdefghijklmnopqrstuvwxyz"
-            )) {
+        if (
+            $this->host === $host = strtr(
+                $host,
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "abcdefghijklmnopqrstuvwxyz"
+            )
+        ) {
             return $this;
         }
 

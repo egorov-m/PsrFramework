@@ -7,8 +7,6 @@ use Psr\Http\Message\ResponseInterface;
 
 class Response extends Message implements ResponseInterface
 {
-
-
     protected static array $statusCode = [
         100 => 'Continue',
         101 => 'Switching Protocols',

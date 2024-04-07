@@ -11,19 +11,21 @@ use Psr\Http\Message\UriInterface;
 
 class ServerRequestFactory implements ServerRequestFactoryInterface
 {
-
     public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequestInterface
     {
         if (!$uri instanceof UriInterface) {
             throw new InvalidArgumentException('Invalid URI provided');
         }
 
+        $params = [];
+        parse_str($uri->getQuery(), $params);
+
         $serverRequest = new ServerRequest(
             $uri,
             $method,
             $serverParams,
             [], // cookieParams
-            [], //$uri->getQueryParams(), // queryParams from URI
+            $params, // queryParams from URI
             fopen("php://input", "r+"), // body
             getallheaders(), // headers
             [], // uploadedFiles
