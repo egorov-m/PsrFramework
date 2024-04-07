@@ -2,73 +2,130 @@
 
 namespace Csu\PsrFramework\Http\Message;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UriInterface;
 
 class ServerRequest extends Request implements ServerRequestInterface
 {
+    private array $serverParams;
+    private array $cookieParams;
+    private array $queryParams;
+    private array $uploadedFiles;
+    private array $parsedBody;
+    private array $attributes;
+    private array $bodyParams;
+
+    public function __construct(
+        UriInterface $uri,
+        array $serverParams = [],
+        array $cookieParams = [],
+//        array $queryParams = [],
+        $body = null,
+        array $uploadedFiles = [],
+        array $parsedBody = [],
+        array $attributes = []
+    ) {
+        parent::__construct($uri, $body);
+
+        $this->serverParams = $serverParams;
+        $this->cookieParams = $cookieParams;
+//        $this->queryParams = $queryParams;
+        $this->uploadedFiles = $uploadedFiles;
+        $this->parsedBody = $parsedBody;
+        $this->attributes = $attributes;
+    }
 
     public function getServerParams(): array
     {
-        // TODO: Implement getServerParams() method.
+        return $this->serverParams;
     }
 
     public function getCookieParams(): array
     {
-        // TODO: Implement getCookieParams() method.
+        return $this->cookieParams;
     }
 
     public function withCookieParams(array $cookies): ServerRequestInterface
     {
-        // TODO: Implement withCookieParams() method.
+        $new = clone $this;
+        $new->cookieParams = $cookies;
+        return $new;
     }
 
     public function getQueryParams(): array
     {
-        // TODO: Implement getQueryParams() method.
+        return $this->queryParams;
     }
 
     public function withQueryParams(array $query): ServerRequestInterface
     {
-        // TODO: Implement withQueryParams() method.
+        $new = clone $this;
+        $new->queryParams = $query;
+        return $new;
     }
 
     public function getUploadedFiles(): array
     {
-        // TODO: Implement getUploadedFiles() method.
+        return $this->uploadedFiles;
     }
 
     public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
-        // TODO: Implement withUploadedFiles() method.
+        $new = clone $this;
+        $new->uploadedFiles = $uploadedFiles;
+        return $new;
     }
 
     public function getParsedBody()
     {
-        // TODO: Implement getParsedBody() method.
+        return $this->parsedBody;
     }
 
     public function withParsedBody($data): ServerRequestInterface
     {
-        // TODO: Implement withParsedBody() method.
+        $this->assertParsedBody($data);
+        $clone = clone $this;
+        $clone->parsedBody = $data;
+        return $clone;
     }
 
     public function getAttributes(): array
     {
-        // TODO: Implement getAttributes() method.
+        return $this->attributes;
     }
 
     public function getAttribute(string $name, $default = null)
     {
-        // TODO: Implement getAttribute() method.
+        return $this->attributes[$name] ?? $default;
     }
 
     public function withAttribute(string $name, $value): ServerRequestInterface
     {
-        // TODO: Implement withAttribute() method.
+        $clone = clone $this;
+        $clone->attributes[$name] = $value;
+        return $clone;
     }
 
     public function withoutAttribute(string $name): ServerRequestInterface
     {
-        // TODO: Implement withoutAttribute() method.
+        $clone = clone $this;
+        unset($clone->attributes[$name]);
+        return $clone;
+    }
+    protected function assertParsedBody($data): void
+    {
+        if (
+            ! is_null($data) &&
+            ! is_array($data) &&
+            ! is_object($data)
+        ) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Only accepts array, object and null, but "%s" provided.',
+                    gettype($data)
+                )
+            );
+        }
     }
 }
