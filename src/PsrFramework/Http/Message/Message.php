@@ -9,7 +9,7 @@ use Psr\Http\Message\StreamInterface;
 class Message implements MessageInterface
 {
     protected array $headers = [];
-    protected ?StreamInterface $body = null;
+    protected ?StreamInterface $body;
     protected array $validProtocolVersions = [
         '1.0',
         '1.1',
@@ -17,7 +17,7 @@ class Message implements MessageInterface
         '3.0',
     ];
 
-    public function __construct(?string $body = null)
+    public function __construct($body = null)
     {
         $this->body = $body !== null ? new Stream($body) : null;
     }
@@ -44,7 +44,6 @@ class Message implements MessageInterface
         foreach ($this->headerNameMapping as $originalName => $normalizedName) {
             $normalizedName = strtolower($normalizedName);
             $originalValue = $this->headers[$normalizedName] ?? null;
-
             if ($originalValue !== null) {
                 $normalizedHeaders[$originalName] = $originalValue;
             }
@@ -67,14 +66,19 @@ class Message implements MessageInterface
 
     public function getHeaderLine(string $name): string
     {
-        return implode(', ', $this->getHeader($name));
+        $t = $this->getHeader($name);
+        if (! empty($t)) {
+            return implode(', ', $this->getHeader($name)["value"]);
+        }
+
+        return "";
     }
 
     public function withHeader(string $name, $value): MessageInterface
     {
         $normalizedHeaderName = $this->normalizeHeaderFieldName($name);
 
-        return (clone $this)->setHeader($normalizedHeaderName, $value, $name);
+        return $this->setHeader($normalizedHeaderName, $value, $name);
     }
 
     protected function setHeader(string $name, $value, string $originalName): MessageInterface
@@ -209,11 +213,11 @@ class Message implements MessageInterface
 
         foreach ($headers as $name => $value) {
             $normalizedName = $this->normalizeHeaderFieldName($name);
-            $normalizedValue = $this->normalizeHeaderFieldValue($value);
+//            $normalizedValue = $this->normalizeHeaderFieldValue($value);
 
             $headerMap[$normalizedName] = [
                 'original_name' => $name,
-                'value' => $normalizedValue
+                'value' => [$value]
             ];
         }
 
