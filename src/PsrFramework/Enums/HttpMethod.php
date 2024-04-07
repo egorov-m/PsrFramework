@@ -4,9 +4,9 @@ namespace Csu\PsrFramework\Enums;
 
 enum HttpMethod: string
 {
-    case Get = "get";
-    case Post = "post";
-    case Put = "put";
-    case Head = "head";
-    case Delete = "delete";
+    case Get = "GET";
+    case Post = "POST";
+    case Put = "PUT";
+    case Head = "HEAD";
+    case Delete = "DELETE";
 }

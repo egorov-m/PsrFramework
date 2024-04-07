@@ -4,17 +4,19 @@ namespace Csu\PsrFramework\Http\Message;
 
 use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
 class Request extends Message implements RequestInterface
 {
     protected $requestTarget;
-    private string $method = 'GET';
+    private string $method = "GET";
     private UriInterface $uri;
 
-    public function __construct(UriInterface $uri, ?string $body=null)
+    public function __construct(UriInterface $uri, string $method, $body=null)
     {
         parent::__construct($body);
+        $this->method = $method;
         $this->uri = $uri;
     }
 

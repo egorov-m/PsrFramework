@@ -2,7 +2,7 @@
 
 namespace Csu\PsrFramework\Http\Message;
 
-use http\Exception\RuntimeException;
+use RuntimeException;
 use Psr\Http\Message\StreamInterface;
 
 class Stream implements StreamInterface
@@ -99,7 +99,7 @@ class Stream implements StreamInterface
         if(!$this->isWritable()){
             throw new RuntimeException("Stream is not writable");
         }
-        $result = fwrite($this->stream);
+        $result = fwrite($this->stream, $string);
         if ($result===false){
             throw new RuntimeException("Error writing to stream");
         }

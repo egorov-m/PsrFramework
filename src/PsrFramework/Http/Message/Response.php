@@ -83,7 +83,7 @@ class Response extends Message implements ResponseInterface
     public function __construct(
         int $statusCode = 200,
         array $headers = [],
-        $body = '',
+        $body = null,
         string $protocolVersion = '1.1',
         string $reasonPhrase = 'OK'
     ) {

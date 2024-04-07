@@ -6,6 +6,7 @@ use Csu\PsrFramework\Di\ComponentContainer;
 use Csu\PsrFramework\Enums\HttpStatusCode;
 use Csu\PsrFramework\Exceptions\ContainerException;
 use Csu\PsrFramework\Exceptions\RouteNotFoundException;
+use Csu\PsrFramework\Http\Message\Uri;
 use Csu\PsrFramework\Http\Server\Attributes\Route;
 use Jenssegers\Blade\Blade;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -16,6 +17,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionFunction;
 
 class Router implements RouteInterface
 {
@@ -75,7 +77,7 @@ class Router implements RouteInterface
     {
         $request = $this->serverRequestFactory->createServerRequest(
             $_SERVER["REQUEST_METHOD"],
-            $_SERVER["REQUEST_URI"],
+            new Uri($_SERVER["REQUEST_URI"]),
             $serverParams
         );
 
@@ -109,7 +111,7 @@ class Router implements RouteInterface
         }
 
         if (is_callable($action)) {
-            return call_user_func($action);
+            return call_user_func($action, $request);
         }
 
         $keys = array_keys($action);
@@ -121,7 +123,7 @@ class Router implements RouteInterface
             $class = $this->container->get($class);
 
             if (method_exists($class, $method)) {
-                return call_user_func_array([$class, $method], []);
+                return call_user_func_array([$class, $method], [$request]);
             }
         }
 

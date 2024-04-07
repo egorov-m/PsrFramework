@@ -26,7 +26,9 @@ class BodyParsingMiddleware implements MiddlewareInterface
 
         if (empty($parsedBody)) {
             $parsedBody = $this->parseBody($request);
-            $request = $request->withParsedBody($parsedBody);
+            if ($parsedBody != null) {
+                $request = $request->withParsedBody($parsedBody);
+            }
         }
 
         return $handler->handle($request);

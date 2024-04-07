@@ -4,6 +4,7 @@ namespace Csu\PsrFramework\Http\Message;
 
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
 class ServerRequest extends Request implements ServerRequestInterface
@@ -18,15 +19,17 @@ class ServerRequest extends Request implements ServerRequestInterface
 
     public function __construct(
         UriInterface $uri,
+        string $method,
         array $serverParams = [],
         array $cookieParams = [],
         array $queryParams = [],
         $body = null,
+        array $headers = [],
         array $uploadedFiles = [],
         array $parsedBody = [],
         array $attributes = []
     ) {
-        parent::__construct($uri, $body);
+        parent::__construct($uri, $method, $body);
 
         $this->serverParams = $serverParams;
         $this->cookieParams = $cookieParams;
@@ -34,6 +37,8 @@ class ServerRequest extends Request implements ServerRequestInterface
         $this->uploadedFiles = $uploadedFiles;
         $this->parsedBody = $parsedBody;
         $this->attributes = $attributes;
+
+        $this->setHeaders($headers);
     }
 
     public function getServerParams(): array
@@ -77,7 +82,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         return $new;
     }
 
-    public function getParsedBody()
+    public function getParsedBody(): array
     {
         return $this->parsedBody;
     }

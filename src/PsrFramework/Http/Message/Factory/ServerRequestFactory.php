@@ -3,6 +3,7 @@
 namespace Csu\PsrFramework\Http\Message\Factory;
 
 use Csu\PsrFramework\Http\Message\ServerRequest;
+use Csu\PsrFramework\Http\Message\Stream;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,10 +20,12 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
 
         $serverRequest = new ServerRequest(
             $uri,
+            $method,
             $serverParams,
             [], // cookieParams
             [], //$uri->getQueryParams(), // queryParams from URI
-            null, // body
+            fopen("php://input", "r+"), // body
+            getallheaders(), // headers
             [], // uploadedFiles
             [], // parsedBody
             [], // attributes

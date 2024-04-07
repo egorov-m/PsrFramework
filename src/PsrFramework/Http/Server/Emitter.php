@@ -33,14 +33,11 @@ class Emitter implements EmitterInterface
 
     private function emitHeaders(ResponseInterface $response): void
     {
-        foreach ($response->getHeaders() as $name => $values) {
+        foreach ($response->getHeaders() as $name => $value) {
             $name = str_replace(" ", "-", ucwords(strtolower(str_replace("-", " ", (string) $name))));
             $firstReplace = !($name === "Set-Cookie");
 
-            foreach ($values as $value) {
-                header("$name: $value", $firstReplace);
-                $firstReplace = false;
-            }
+            header("$name: $value", $firstReplace);
         }
     }
 
