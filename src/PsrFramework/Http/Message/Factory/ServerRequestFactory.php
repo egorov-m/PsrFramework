@@ -21,7 +21,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             $uri,
             $serverParams,
             [], // cookieParams
-//            $uri->getQueryParams(), // queryParams from URI
+            [], //$uri->getQueryParams(), // queryParams from URI
             null, // body
             [], // uploadedFiles
             [], // parsedBody

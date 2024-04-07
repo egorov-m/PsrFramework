@@ -20,7 +20,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         UriInterface $uri,
         array $serverParams = [],
         array $cookieParams = [],
-//        array $queryParams = [],
+        array $queryParams = [],
         $body = null,
         array $uploadedFiles = [],
         array $parsedBody = [],
@@ -30,7 +30,7 @@ class ServerRequest extends Request implements ServerRequestInterface
 
         $this->serverParams = $serverParams;
         $this->cookieParams = $cookieParams;
-//        $this->queryParams = $queryParams;
+        $this->queryParams = $queryParams;
         $this->uploadedFiles = $uploadedFiles;
         $this->parsedBody = $parsedBody;
         $this->attributes = $attributes;
