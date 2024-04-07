@@ -2,7 +2,7 @@
 
 namespace Csu\PsrFramework\Di;
 
-use Csu\PsrFramework\Exception\ContainerException;
+use Csu\PsrFramework\Exceptions\ContainerException;
 use ReflectionClass;
 
 use Psr\Container\ContainerInterface;
@@ -66,7 +66,7 @@ class ComponentContainer extends BaseComponent implements ContainerInterface
         return false;
     }
 
-    public function __set(string $id, callable|string $concrete)
+    public function set(string $id, callable|string $concrete): void
     {
         $this->components[$id] = $concrete;
     }

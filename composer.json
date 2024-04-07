@@ -3,7 +3,8 @@
     "autoload": {
         "psr-4": {
             "Csu\\PsrFramework\\": "src/PsrFramework/",
-            "Csu\\PsrFramework\\Examples\\": "examples/"
+            "Csu\\PsrFramework\\Examples\\": "examples/",
+            "Csu\\Config\\": "protected/config/"
         }
     },
     "require": {
@@ -13,6 +14,8 @@
         "psr/link": "^2.0",
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
-        "psr/http-factory": "^1.0"
+        "psr/http-factory": "^1.0",
+        "jenssegers/blade": "^2.0",
+        "vlucas/phpdotenv": "^5.6"
     }
 }

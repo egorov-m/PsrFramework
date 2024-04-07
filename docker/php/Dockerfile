@@ -22,7 +22,9 @@ RUN apt-get -y update \
     && apt-get install -y libicu-dev && docker-php-ext-install intl \
     && apt-get install -y libmagickwand-dev build-essential libtool uuid-dev automake autotools-dev libltdl-dev libltdl7 \
     && pecl install imagick \
-    && docker-php-ext-enable imagick
+    && docker-php-ext-enable imagick \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug
 
 RUN apt-get -y clean \
     && apt-get -y autoclean \

@@ -2,15 +2,21 @@
 
 namespace Csu\PsrFramework\Examples\Controllers;
 
-use Csu\PsrFramework\Http\Server\Attributes\Get;
-use Csu\PsrFramework\Http\Server\View;
+use Jenssegers\Blade\Blade;
 
-class HomeController
+use Csu\PsrFramework\Http\Server\Attributes\Get;
+
+readonly class HomeController
 {
+    public function __construct(private Blade $blade)
+    {
+
+    }
+
     #[Get("/")]
     #[Get("/home")]
-    public function index(): View
+    public function index(): string
     {
-        return View::make("index");
+        return $this->blade->render("index", ["title" => "Home page"]);
     }
 }

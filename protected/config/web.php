@@ -1,9 +1,3 @@
 <?php
 
-return [
-    "components" => [
-        "router" => [
-
-        ]
-    ]
-];
+return [];

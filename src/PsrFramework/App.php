@@ -2,9 +2,9 @@
 
 namespace Csu\PsrFramework;
 
-use Csu\PsrFramework\Exception\RouteNotFoundException;
+use Csu\PsrFramework\Exceptions\RouteNotFoundException;
 use Csu\PsrFramework\Http\Server\Router;
-use Csu\PsrFramework\Http\Server\View;
+use Jenssegers\Blade\Blade;
 use Psr\Container\ContainerInterface;
 
 class App
@@ -26,7 +26,7 @@ class App
         } catch (RouteNotFoundException) {
             http_response_code(404);
 
-            echo View::make("error/404");
+            echo $this->components->get(Blade::class)->render("error/404");
         }
     }
 }

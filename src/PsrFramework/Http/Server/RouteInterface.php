@@ -2,7 +2,9 @@
 
 namespace Csu\PsrFramework\Http\Server;
 
-interface RouteInterface
+use Psr\Http\Server\RequestHandlerInterface;
+
+interface RouteInterface extends RequestHandlerInterface
 {
 
 }

@@ -3,9 +3,12 @@
 namespace Csu\PsrFramework\Http\Server;
 
 use Csu\PsrFramework\Di\ComponentContainer;
-use Csu\PsrFramework\Exception\ContainerException;
-use Csu\PsrFramework\Exception\RouteNotFoundException;
+use Csu\PsrFramework\Exceptions\ContainerException;
+use Csu\PsrFramework\Exceptions\RouteNotFoundException;
 use Csu\PsrFramework\Http\Server\Attributes\Route;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
@@ -33,7 +36,7 @@ class Router implements RouteInterface
                 foreach ($attributes as $attribute) {
                     $route = $attribute->newInstance();
 
-                    $this->register($route->method, $route->routePath, [$controller => $method->getName()]);
+                    $this->register($route->method->value, $route->routePath, [$controller => $method->getName()]);
                 }
             }
         }
@@ -83,5 +86,27 @@ class Router implements RouteInterface
         }
 
         throw new RouteNotFoundException();
+    }
+
+    public function add($middleware): self
+    {
+        // TODO
+        return $this;
+    }
+
+    public function addMiddleware(MiddlewareInterface $middleware): self
+    {
+        // TODO
+        return $this;
+    }
+
+    public function addErrorMiddleware()
+    {
+
+    }
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        // TODO: Implement handle() method.
     }
 }
