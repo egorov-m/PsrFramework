@@ -3,10 +3,14 @@
 namespace Csu\PsrFramework\Http\Server;
 
 use Csu\PsrFramework\Di\ComponentContainer;
+use Csu\PsrFramework\Enums\HttpStatusCode;
 use Csu\PsrFramework\Exceptions\ContainerException;
 use Csu\PsrFramework\Exceptions\RouteNotFoundException;
 use Csu\PsrFramework\Http\Server\Attributes\Route;
+use Jenssegers\Blade\Blade;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use ReflectionAttribute;
@@ -17,9 +21,16 @@ class Router implements RouteInterface
 {
     private array $routes = [];
 
-    public function __construct(private readonly ComponentContainer $container)
-    {
+    protected MiddlewareDispatcher $middlewareDispatcher;
 
+    public function __construct(
+        private readonly ComponentContainer $container,
+        private readonly ServerRequestFactoryInterface $serverRequestFactory,
+        private readonly ResponseFactoryInterface $responseFactory,
+        private readonly EmitterInterface $emitter = new Emitter()
+    )
+    {
+        $this->middlewareDispatcher = new MiddlewareDispatcher($this, $this->container);
     }
 
     /**
@@ -54,15 +65,44 @@ class Router implements RouteInterface
         return $this->routes;
     }
 
+    public function addMiddleware(MiddlewareInterface $middleware): self
+    {
+        $this->middlewareDispatcher->addMiddleware($middleware);
+        return $this;
+    }
+
+    public function run(array $serverParams = []): void
+    {
+        $request = $this->serverRequestFactory->createServerRequest(
+            $_SERVER["REQUEST_METHOD"],
+            $_SERVER["REQUEST_URI"],
+            $serverParams
+        );
+
+        try {
+            $response = $this->middlewareDispatcher->handle($request);
+            $this->emitter->emit($response);
+
+        } catch (RouteNotFoundException) {
+            $response = $this->responseFactory->createResponse(HttpStatusCode::StatusNotFound->value);
+            $body = $response->getBody();
+            $body->write(
+                $this->container->get(Blade::class)->render("error/404")
+            );
+            $response->withHeader("Content-Type", "text/html");
+            $this->emitter->emit($response);
+        }
+    }
+
     /**
      * @throws ReflectionException
      * @throws RouteNotFoundException
      * @throws ContainerException
      */
-    public function resolve(string $requestUri, string $requestMethod)
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $route = explode("?", $requestUri)[0];
-        $action = $this->routes[$requestMethod][$route] ?? null;
+        $route = explode("?", $request->getUri()->getPath())[0];
+        $action = $this->routes[$request->getMethod()][$route] ?? null;
 
         if (! $action) {
             throw new RouteNotFoundException();
@@ -86,27 +126,5 @@ class Router implements RouteInterface
         }
 
         throw new RouteNotFoundException();
-    }
-
-    public function add($middleware): self
-    {
-        // TODO
-        return $this;
-    }
-
-    public function addMiddleware(MiddlewareInterface $middleware): self
-    {
-        // TODO
-        return $this;
-    }
-
-    public function addErrorMiddleware()
-    {
-
-    }
-
-    public function handle(ServerRequestInterface $request): ResponseInterface
-    {
-        // TODO: Implement handle() method.
     }
 }
