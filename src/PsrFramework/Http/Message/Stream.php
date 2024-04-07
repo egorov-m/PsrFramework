@@ -8,10 +8,15 @@ use Psr\Http\Message\StreamInterface;
 class Stream implements StreamInterface
 {
     private $stream;
+
     public function __construct($stream)
     {
-        $this -> $stream = $stream;
+        if (!is_resource($stream)) {
+            $stream = fopen('php://temp', 'r+');
+        }
+        $this->stream = $stream;
     }
+
     public function __toString(): string
     {
         if (!$this->isSeekable()){
