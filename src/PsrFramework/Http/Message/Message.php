@@ -2,6 +2,7 @@
 
 namespace Csu\PsrFramework\Http\Message;
 
+use InvalidArgumentException;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -9,6 +10,12 @@ class Message implements MessageInterface
 {
     protected array $headers = [];
     protected ?StreamInterface $body = null;
+    protected array $validProtocolVersions = [
+        '1.0',
+        '1.1',
+        '2.0',
+        '3.0',
+    ];
 
     public function __construct(?string $body = null)
     {
@@ -182,5 +189,34 @@ class Message implements MessageInterface
                 )
             );
         }
+    }
+
+    protected function assertProtocolVersion(string $version): void
+    {
+        if (!in_array($version, $this->validProtocolVersions)) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Unsupported HTTP protocol version number. "%s" provided.',
+                    $version
+                )
+            );
+        }
+    }
+
+    protected function setHeaders(array $headers): void
+    {
+        $headerMap = [];
+
+        foreach ($headers as $name => $value) {
+            $normalizedName = $this->normalizeHeaderFieldName($name);
+            $normalizedValue = $this->normalizeHeaderFieldValue($value);
+
+            $headerMap[$normalizedName] = [
+                'original_name' => $name,
+                'value' => $normalizedValue
+            ];
+        }
+
+        $this->headers = $headerMap;
     }
 }

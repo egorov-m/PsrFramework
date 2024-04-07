@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 class Response extends Message implements ResponseInterface
 {
 
+
     protected static array $statusCode = [
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -79,6 +80,26 @@ class Response extends Message implements ResponseInterface
     protected int $status = 200;
     protected string $reasonPhrase = '';
 
+    public function __construct(
+        int $statusCode = 200,
+        array $headers = [],
+        $body = '',
+        string $protocolVersion = '1.1',
+        string $reasonPhrase = 'OK'
+    ) {
+        $this->assertStatusCode($statusCode);
+        $this->assertProtocolVersion($protocolVersion);
+        $this->assertReasonPhrase($reasonPhrase);
+
+        parent::__construct($body);
+
+        $this->setHeaders($headers);
+
+        $this->status = $statusCode;
+        $this->protocolVersion = $protocolVersion;
+        $this->reasonPhrase = $reasonPhrase;
+    }
+
     public function getStatusCode(): int
     {
         return $this->status;
@@ -128,6 +149,18 @@ class Response extends Message implements ResponseInterface
         if (preg_match($escapePattern, $reasonPhrase)) {
             throw new InvalidArgumentException(
                 'Reason phrase contains prohibited characters.'
+            );
+        }
+    }
+
+    private function assertStatusCode(int $statusCode): void
+    {
+        if ($statusCode < 100 || $statusCode >= 600) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Status code should be an integer value in the range of 100-599, but "%s" provided.',
+                    $statusCode
+                )
             );
         }
     }
