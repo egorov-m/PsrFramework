@@ -39,6 +39,10 @@ class BodyParsingMiddleware implements MiddlewareInterface
         $this->registerBodyParser("application/json", static function ($body) {
             return json_decode($body, true);
         });
+        $this->registerBodyParser("application/x-www-form-urlencoded", static function ($body) {
+            parse_str($body, $parsedArray);
+            return $parsedArray;
+        });
     }
 
     public function registerBodyParser(string $contentType, callable $callable): self

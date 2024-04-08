@@ -3,6 +3,7 @@
 namespace Csu\PsrFramework;
 
 use Csu\PsrFramework\Di\ComponentContainer;
+use Csu\PsrFramework\Examples\Controllers\AuthController;
 use Csu\PsrFramework\Examples\Controllers\HomeController;
 use Csu\PsrFramework\Http\Message\Factory\ResponseFactory;
 use Csu\PsrFramework\Http\Message\Factory\ServerRequestFactory;
@@ -24,6 +25,7 @@ $router->addMiddleware(new BodyParsingMiddleware());
 $router->registerRouteFromControllerAttributes(
     [
         HomeController::class,
+        AuthController::class,
     ]
 );
 

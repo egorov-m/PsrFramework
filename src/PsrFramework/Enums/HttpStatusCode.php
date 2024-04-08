@@ -14,4 +14,5 @@ enum HttpStatusCode: int
     case StatusMethodNotAllowed = 405;
     case StatusInternalServerError = 500;
     case StatusNotImplemented = 501;
+    case StatusSeeOther = 303;
 }

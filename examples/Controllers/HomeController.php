@@ -23,12 +23,36 @@ readonly class HomeController
     public function index(ServerRequestInterface $request): Response
     {
 
+
+//        $response = $this->responseFactory->createResponse(HttpStatusCode::StatusOk->value);
+//        $body = $response->getBody();
+//        $body->write(
+//            $this->blade->render("index", ["title" => "Home page"])
+//        );
+//        return $response->withHeader("Content-Type", "text/html");
+//        $parsedArray = $request -> getParsedBody();
+//        $username = $parsedArray['email'];
+//        $password = $parsedArray['password'];
+//        $response = $this->responseFactory->createResponse(HttpStatusCode::StatusOk->value);
+//        $body = $response->getBody();
+//        $body->write(
+//            $this->blade->render("main", ['username' => $username, 'password'=>$password])
+//        );
+//        return $response->withHeader("Content-Type", "application/json");
+        $parsedArray = $request->getParsedBody();
+        $username = $parsedArray['email'];
+        $password = $parsedArray['password'];
+
         $response = $this->responseFactory->createResponse(HttpStatusCode::StatusOk->value);
+        $response = $response->withHeader("Content-Type", "application/json");
+        $data = [
+            'username' => $username,
+            'password' => $password
+        ];
         $body = $response->getBody();
-        $body->write(
-            $this->blade->render("index", ["title" => "Home page"])
-        );
-        return $response->withHeader("Content-Type", "text/html");
+        $body->write(json_encode($data));
+
+        return $response;
     }
 
     #[Post("/echo")]
@@ -42,4 +66,22 @@ readonly class HomeController
 
         return $response->withHeader("Content-Type", "application/json");
     }
+    #[Get("/auth")]
+    public function auth(): Response
+    {
+        $response = $this->responseFactory->createResponse(HttpStatusCode::StatusOk->value);
+        $body = $response->getBody();
+        $body->write(
+            $this->blade->render("auth", ["title" => "Авторизация"])
+            );
+        return $response->withHeader("Content-Type", "text/html");
+    }
+    #[Get("/error")]
+    public function showError(): string
+    {
+        return $this->blade->render("error/404", ["title" => "404 Error Page"]);
+    }
+
+
+
 }

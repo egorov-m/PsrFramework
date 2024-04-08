@@ -8,6 +8,7 @@
     <title>Not found</title>
 </head>
 <body>
-    <h1>404 Not found</h1>
+<h1>{{$username}}</h1>
+<h1>{{$password}}</h1>
 </body>
 </html>
