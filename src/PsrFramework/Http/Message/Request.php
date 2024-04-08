@@ -13,7 +13,7 @@ class Request extends Message implements RequestInterface
     private string $method = "GET";
     private UriInterface $uri;
 
-    public function __construct(UriInterface $uri, string $method, $body=null)
+    public function __construct(UriInterface $uri, string $method, $body = null)
     {
         parent::__construct($body);
         $this->method = $method;
@@ -42,13 +42,13 @@ class Request extends Message implements RequestInterface
 
     public function withRequestTarget(string $requestTarget): RequestInterface
     {
-        if(preg_match('#\s#', $requestTarget)){
+        if (preg_match('#\s#', $requestTarget)) {
             throw new InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
         }
         $clone = clone $this;
         $uri = $clone->uri->withPath('');
         $uri =  $uri->withQuery('');
-        $clone->uri=$uri;
+        $clone->uri = $uri;
 
         return $clone;
     }
@@ -60,11 +60,11 @@ class Request extends Message implements RequestInterface
 
     public function withMethod(string $method): RequestInterface
     {
-        if (!is_string($method) || !preg_match('/^[!#$%&\'*+.^_`|~0-9a-zA-Z-]+$/', $method)){
+        if (!is_string($method) || !preg_match('/^[!#$%&\'*+.^_`|~0-9a-zA-Z-]+$/', $method)) {
             throw new InvalidArgumentException('Invalid HTTP method provided');
         }
         $clone = clone $this;
-        $clone->method=$method;
+        $clone->method = $method;
 
         return $clone;
     }
