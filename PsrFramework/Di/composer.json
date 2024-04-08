@@ -1,0 +1,13 @@
+{
+  "name": "psr-framework/di",
+  "version": "0.1",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Csu\\PsrFramework\\Di\\": "src"
+    }
+  },
+  "require": {
+    "psr/container": "^2.0"
+  }
+}

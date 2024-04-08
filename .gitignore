@@ -5,4 +5,4 @@
 vendor/
 .bash_history
 
-examples/cache/
+src/App/cache/

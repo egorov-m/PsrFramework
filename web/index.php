@@ -1,30 +1,35 @@
 <?php
 
-namespace Csu\PsrFramework;
+namespace Csu\App;
 
-use Csu\PsrFramework\Di\ComponentContainer;
-use Csu\PsrFramework\Examples\Controllers\ErrorController;
-use Csu\PsrFramework\Examples\Controllers\AuthController;
-use Csu\PsrFramework\Examples\Controllers\HomeController;
-use Csu\PsrFramework\Examples\Controllers\ProtectedController;
-use Csu\PsrFramework\Examples\middleware\AuthMiddleware;
-use Csu\PsrFramework\Exceptions\ForbiddenException;
-use Csu\PsrFramework\Exceptions\InternalServerException;
-use Csu\PsrFramework\Exceptions\NotFoundException;
-use Csu\PsrFramework\Exceptions\UnauthorizedException;
-use Csu\PsrFramework\Http\Message\Factory\ResponseFactory;
-use Csu\PsrFramework\Http\Message\Factory\ServerRequestFactory;
-use Csu\PsrFramework\Http\Server\Middleware\BodyParsingMiddleware;
-use Csu\PsrFramework\Http\Server\Middleware\ErrorMiddleware;
-use Csu\PsrFramework\Http\Server\Router;
+require dirname(__DIR__) . "/vendor/autoload.php";;
+
+use Csu\App\Controllers\AuthController;
+use Csu\App\Controllers\ErrorController;
+use Csu\App\Controllers\HomeController;
+use Csu\App\Controllers\ProtectedController;
+use Csu\App\Middleware\AuthMiddleware;
+use Csu\PsrFramework\Di\Components\ComponentContainer;
+use Csu\PsrFramework\Message\Factory\ResponseFactory;
+use Csu\PsrFramework\Message\Factory\ServerRequestFactory;
+use Csu\PsrFramework\Server\Exceptions\ForbiddenException;
+use Csu\PsrFramework\Server\Exceptions\InternalServerException;
+use Csu\PsrFramework\Server\Exceptions\NotFoundException;
+use Csu\PsrFramework\Server\Exceptions\UnauthorizedException;
+use Csu\PsrFramework\Server\Middleware\BodyParsingMiddleware;
+use Csu\PsrFramework\Server\Middleware\ErrorMiddleware;
+use Csu\PsrFramework\Server\Router;
+use Dotenv\Dotenv;
 use Jenssegers\Blade\Blade;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
-require dirname(__DIR__) . "/vendor/autoload.php";
+define("VIEW_PATH", dirname(__DIR__) . "/src/App/views");
+define("CACHE_PATH", dirname(__DIR__) . "/src/App/cache");
 
-define("VIEW_PATH", dirname(__DIR__) .  "/examples/views");
-define("CACHE_PATH", dirname(__DIR__) .  "/examples/cache");
+// load config from .env file
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
 $container = new ComponentContainer([]);
 $container->set(Blade::class, fn() => new Blade(VIEW_PATH, CACHE_PATH));

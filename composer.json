@@ -2,11 +2,23 @@
     "name": "csu/psr-framework",
     "autoload": {
         "psr-4": {
-            "Csu\\PsrFramework\\": "src/PsrFramework/",
-            "Csu\\PsrFramework\\Examples\\": "examples/",
-            "Csu\\Config\\": "protected/config/"
+            "Csu\\App\\": "src/App/"
         }
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "PsrFramework/Di"
+        },
+        {
+            "type": "path",
+            "url": "PsrFramework/Message"
+        },
+        {
+            "type": "path",
+            "url": "PsrFramework/Server"
+        }
+    ],
     "require": {
         "php": "8.3.*",
         "psr/http-message": "^2.0",
@@ -16,7 +28,10 @@
         "psr/http-server-middleware": "^1.0",
         "psr/http-factory": "^1.0",
         "jenssegers/blade": "^2.0",
-        "vlucas/phpdotenv": "^5.6"
+        "vlucas/phpdotenv": "^5.6",
+        "psr-framework/di": "0.1",
+        "psr-framework/message": "0.1",
+        "psr-framework/server": "0.1"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.9"
