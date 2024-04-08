@@ -22,37 +22,35 @@ readonly class HomeController
     #[Get("/home")]
     public function index(ServerRequestInterface $request): Response
     {
-
-
-//        $response = $this->responseFactory->createResponse(HttpStatusCode::StatusOk->value);
-//        $body = $response->getBody();
-//        $body->write(
-//            $this->blade->render("index", ["title" => "Home page"])
-//        );
-//        return $response->withHeader("Content-Type", "text/html");
-//        $parsedArray = $request -> getParsedBody();
-//        $username = $parsedArray['email'];
-//        $password = $parsedArray['password'];
-//        $response = $this->responseFactory->createResponse(HttpStatusCode::StatusOk->value);
-//        $body = $response->getBody();
-//        $body->write(
-//            $this->blade->render("main", ['username' => $username, 'password'=>$password])
-//        );
-//        return $response->withHeader("Content-Type", "application/json");
-        $parsedArray = $request->getParsedBody();
-        $username = $parsedArray['email'];
-        $password = $parsedArray['password'];
-
+        $username = $_SESSION['username'] ?? false;
+        $authenticated = $_SESSION['authenticated'] ?? false;
         $response = $this->responseFactory->createResponse(HttpStatusCode::StatusOk->value);
-        $response = $response->withHeader("Content-Type", "application/json");
-        $data = [
-            'username' => $username,
-            'password' => $password
-        ];
         $body = $response->getBody();
-        $body->write(json_encode($data));
+        if($username && $authenticated){
+            $body->write(
+                $this->blade->render(
+                    "main",
+                    [
+                        "title" => "You authorized : Homepage",
+                        "username" => $username
+                    ]
+                )
+            );
+        }
+        else{
+            $body->write(
+                $this->blade->render(
+                    "main",
+                    [
+                        "title" => "You not authorized : Homepage",
+                        "username" => ""
+                    ]
+                )
+            );
+        }
 
-        return $response;
+        return $response->withHeader("Content-Type", "text/html");
+
     }
 
     #[Post("/echo")]
@@ -69,6 +67,14 @@ readonly class HomeController
     #[Get("/auth")]
     public function auth(): Response
     {
+        $username = $_SESSION['username'] ?? false;
+        $authenticated = $_SESSION['authenticated'] ?? false;
+
+        if($username && $authenticated){
+            $response = $this->responseFactory->createResponse(HttpStatusCode::StatusSeeOther->value);
+            return $response->withHeader("Location", "http://localhost:44480/");
+        }
+
         $response = $this->responseFactory->createResponse(HttpStatusCode::StatusOk->value);
         $body = $response->getBody();
         $body->write(
@@ -76,12 +82,4 @@ readonly class HomeController
             );
         return $response->withHeader("Content-Type", "text/html");
     }
-    #[Get("/error")]
-    public function showError(): string
-    {
-        return $this->blade->render("error/404", ["title" => "404 Error Page"]);
-    }
-
-
-
 }

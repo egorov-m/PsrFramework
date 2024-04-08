@@ -6,6 +6,8 @@ use Csu\PsrFramework\Di\ComponentContainer;
 use Csu\PsrFramework\Examples\Controllers\ErrorController;
 use Csu\PsrFramework\Examples\Controllers\AuthController;
 use Csu\PsrFramework\Examples\Controllers\HomeController;
+use Csu\PsrFramework\Examples\Controllers\ProtectedController;
+use Csu\PsrFramework\Examples\middleware\AuthMiddleware;
 use Csu\PsrFramework\Exceptions\ForbiddenException;
 use Csu\PsrFramework\Exceptions\InternalServerException;
 use Csu\PsrFramework\Exceptions\NotFoundException;
@@ -31,6 +33,7 @@ $router = new Router($container, new ServerRequestFactory(), new ResponseFactory
 $router->addMiddleware(new BodyParsingMiddleware());
 
 $errorController = new ErrorController(new Blade(VIEW_PATH, CACHE_PATH), new ResponseFactory());
+$router->addMiddleware(new AuthMiddleware(["/protected"]));
 $router->addMiddleware(new ErrorMiddleware([
     NotFoundException::class =>
         fn(ServerRequestInterface $request, Throwable $exception) =>
@@ -49,11 +52,12 @@ $router->addMiddleware(new ErrorMiddleware([
 $router->registerRouteFromControllerAttributes(
     [
         HomeController::class,
-        ErrorController::class,
-        AuthController::class
+        AuthController::class,
+        ProtectedController::class,
+        ErrorController::class
     ]
 );
-
+session_start();
 (new App(
     $container,
     $router,

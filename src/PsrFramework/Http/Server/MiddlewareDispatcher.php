@@ -48,4 +48,5 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
     {
         return $this->kernel->handle($request);
     }
+
 }

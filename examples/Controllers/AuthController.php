@@ -3,13 +3,10 @@
 namespace Csu\PsrFramework\Examples\Controllers;
 
 use Csu\PsrFramework\Enums\HttpStatusCode;
-use Csu\PsrFramework\Examples\middleware\AuthMiddleware;
 use Csu\PsrFramework\Examples\middleware\AuthSession;
 use Csu\PsrFramework\Http\Message\Factory\ResponseFactory;
 use Csu\PsrFramework\Http\Message\Response;
 use Csu\PsrFramework\Http\Server\Attributes\Post;
-use Exception;
-use Jenssegers\Blade\Blade;
 use Psr\Http\Message\ServerRequestInterface;
 
 readonly class AuthController{
